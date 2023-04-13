@@ -1,6 +1,8 @@
-var defaltSize = 40;
-var scale = 1;
-var scaleFactor = 5;
+export let canvasValues = {
+  defaltSize: 40,
+  scale: 1,
+  scaleFactor: 5,
+};
 var canvasGroup;
 
 var gridSize = (defaltSize, scale, scaleFactor) => {
@@ -13,7 +15,11 @@ export function setUpCanvas(p, canvasLayer) {
     canvasGroup = new p.Group();
   }
   drawGridLines(
-    gridSize(defaltSize, scale, scaleFactor),
+    gridSize(
+      canvasValues.defaltSize,
+      canvasValues.scale,
+      canvasValues.scaleFactor
+    ),
     p.view.bounds,
     p.view.center,
     p,
@@ -93,8 +99,8 @@ export function drawGridLines(gSize, boundingRect, center, p, layer) {
     xPos = center.x;
   }
 
-  if (scale > 4) {
-    var color = scale > 6 ? "black" : "#b3b3b3";
+  if (canvasValues.scale > 4) {
+    var color = canvasValues.scale > 6 ? "black" : "#b3b3b3";
     drawLines(gSize / 5, 0.2, color);
     drawLines(gSize, 1, "black");
   } else {
@@ -104,9 +110,13 @@ export function drawGridLines(gSize, boundingRect, center, p, layer) {
 
 export function btnZoomInFunction(btnZoomIn, p, canvasLayer) {
   btnZoomIn.addEventListener("click", () => {
-    scale += 1;
+    canvasValues.scale += 1;
     drawGridLines(
-      gridSize(defaltSize, scale, scaleFactor),
+      gridSize(
+        canvasValues.defaltSize,
+        canvasValues.scale,
+        canvasValues.scaleFactor
+      ),
       p.view.bounds,
       p.view.center,
       p,
@@ -117,9 +127,14 @@ export function btnZoomInFunction(btnZoomIn, p, canvasLayer) {
 
 export function btnZoomOutFunction(btnZoomOut, p, canvasLayer, group) {
   btnZoomOut.addEventListener("click", () => {
-    scale > -4 ? (scale -= 1) : scale;
+    if (canvasValues.scale > -4) canvasValues.scale -= 1;
+
     drawGridLines(
-      gridSize(defaltSize, scale, scaleFactor),
+      gridSize(
+        canvasValues.defaltSize,
+        canvasValues.scale,
+        canvasValues.scaleFactor
+      ),
       p.view.bounds,
       p.view.center,
       p,
