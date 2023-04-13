@@ -1,4 +1,3 @@
-import { Point } from "paper/dist/paper-core";
 import {
   placeArrow,
   placeArc,
@@ -8,50 +7,45 @@ import {
   value,
 } from "./sketchFunctions.js";
 
+import {
+  drawGridLines,
+  btnZoomInFunction,
+  btnZoomOutFunction,
+  setUpCanvas,
+} from "./canvasFunctions.js";
+
+import { btnSketchFunction } from "./sketchInteractions.js";
+
 const p = new paper.PaperScope();
 window.onload = function () {
   let canvas = document.getElementById("myCanvas");
   p.setup(canvas);
   var children = p.project.activeLayer.children;
+
   var canvasTool = new p.Tool();
+  var canvasLayer = new p.Layer();
+  var sketchLayer = new p.Layer();
 
-  var gridPath = new p.Path({
-    name: "gridPath",
-    segments: [[0,0], [1000,1000]],
-    strokeColor: "black",
-  })
+  var canvasGroup = new p.Group();
 
-  var drawGridLines = function(gridsize, boundingRect, center) {
-    
-    var xPos = center.x;
-    var yPos = center.y;
-    console.log(boundingRect.top);
+  let btnZoomIn = document.querySelector(".btn-zoomIn");
+  let btnZoomOut = document.querySelector(".btn-zoomOut");
+  let btnSelect = document.querySelector(".btn-select");
 
-    // var aLine = new p.Path.Line(new p.Point(boundingRect.left, center.y), new p.Point(boundingRect.right, center.y));
+  setUpCanvas(p, canvasLayer, canvasGroup);
+  btnZoomInFunction(btnZoomIn, p, canvasLayer, canvasGroup);
+  btnZoomOutFunction(btnZoomOut, p, canvasLayer, canvasGroup);
 
-    for (var i = 0; yPos >= boundingRect.top; i++) {
-      yPos -= gridsize;
-      console.log(yPos);
-      var leftPoint = new p.Point(boundingRect.left, yPos);
-      var rightPoint = new p.Point(boundingRect.right, yPos);
-      var aLine = new p.Path.Line(leftPoint, rightPoint);
-      aLine.strokeColor = 'black';
-    }
-    yPos = center.y;
+  var sketchTool = new p.Tool({
+    name: "sketchTool",
+  });
 
-    for (var i = 0; yPos <= boundingRect.bottom; i++) {
-      yPos += gridsize;
-      var leftPoint = new p.Point(boundingRect.left, yPos);
-      var rightPoint = new p.Point(boundingRect.right, yPos);
-      var aLine = new p.Path.Line(leftPoint, rightPoint);
-      aLine.strokeColor = 'black';
-    }
-    yPos = center.y;
-  } 
-  drawGridLines(40, p.view.bounds, p.view.center);
-
-
-  var sketchTool = new p.Tool();
+  // btnSketchFunction(btnSketch, sketchTool);
+  let btnSketch = document.querySelector(".btn-sketch");
+  btnSketch.addEventListener("click", () => {
+    p.tools.find((tool) => tool.name === "sketchTool").activate();
+    children = p.project.activeLayer.children;
+  });
 
   var mainPath = new p.Path({
     name: "mainPath",
