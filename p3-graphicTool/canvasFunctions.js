@@ -3,35 +3,62 @@ export let canvasValues = {
   scale: 1,
   scaleFactor: 5,
 };
+
+// it turns out that canvasGroup does not have to be a global variable, which is super nice.
 var canvasGroup;
 
-var gridSize = (defaltSize, scale, scaleFactor) => {
+export var gridSize = (defaltSize, scale, scaleFactor) => {
   return defaltSize + scale * scaleFactor;
 };
 
+/**
+ * Rescale the path to fit the new size of canvas. We want to rescale all points in mainPath to fit the
+ * new canvas size.
+ * @param {*} p - paper.js scope object where we can access the mainPath and penPath.
+ */
+function rescalePath(p){
+  var gridScale = gridSize(canvasValues.defaltSize, canvasValues.scale, canvasValues.scaleFactor);
+  var canvasPoint = (gridPoint) => {
+    return new p.Point(gridPoint.x * gridScale + p.view.center.x, gridPoint.y * gridScale + p.view.center.y);
+  }
+  var children = p.project.activeLayer.children;
+  children["mainPath"].segments.forEach((segment) => {
+    segment.point = canvasPoint(children["penPath"].segments[segment.index].point);
+  })
+}
+
+
+/**
+ * Make the canvasLayer the active layer, Sets up the canvas with the grid lines and the default scale.
+ * @param {*} p - paper.js scope object
+ * @param {*} canvasLayer - the canvas layer given to canvas to work with.
+ */
 export function setUpCanvas(p, canvasLayer) {
   canvasLayer.activate();
   if (!canvasGroup) {
     canvasGroup = new p.Group();
   }
-  drawGridLines(
-    gridSize(
-      canvasValues.defaltSize,
-      canvasValues.scale,
-      canvasValues.scaleFactor
-    ),
-    p.view.bounds,
-    p.view.center,
-    p,
-    canvasLayer
-  );
+  drawGridLines(p);
 }
 
-export function drawGridLines(gSize, boundingRect, center, p, layer) {
-  layer.activate();
+/**
+ * Calling this function will draw grid lines of calculated grid size on the canvas. As the scale changes,
+ * the grid lines details will be increased or decreased to fit the canvas.
+ * @param {*} p - the paper.js scope object, where we can access all canvos components.
+ */
+export function drawGridLines(p) {
   canvasGroup.removeChildren();
+  
+  var gSize = gridSize(
+    canvasValues.defaltSize,
+    canvasValues.scale,
+    canvasValues.scaleFactor
+  );
+  var boundingRect = p.view.bounds;
+  var center = p.view.center;
   var xPos = center.x;
   var yPos = center.y;
+  
 
   function drawLines(newGridSize, width, color) {
     var horizontalLine = new p.Path({
@@ -108,37 +135,29 @@ export function drawGridLines(gSize, boundingRect, center, p, layer) {
   }
 }
 
-export function btnZoomInFunction(btnZoomIn, p, canvasLayer) {
-  btnZoomIn.addEventListener("click", () => {
-    canvasValues.scale += 1;
-    drawGridLines(
-      gridSize(
-        canvasValues.defaltSize,
-        canvasValues.scale,
-        canvasValues.scaleFactor
-      ),
-      p.view.bounds,
-      p.view.center,
-      p,
-      canvasLayer
-    );
-  });
+
+/**
+ * Calling this function will zoom in, and calls drawGridLine function that draw grid lines of calculated grid size 
+ * on the canvas.
+ * @param {*} p - the paper.js scope object, where we can access all canvos components.
+ * @param {*} canvasLayer - the layer of the grid lines which will be activated
+ */
+export function btnZoomInFunction(p, canvasLayer) {
+  canvasLayer.activate();
+  canvasValues.scale += 1;
+  drawGridLines(p);
+  rescalePath(p);
 }
 
-export function btnZoomOutFunction(btnZoomOut, p, canvasLayer, group) {
-  btnZoomOut.addEventListener("click", () => {
-    if (canvasValues.scale > -4) canvasValues.scale -= 1;
-
-    drawGridLines(
-      gridSize(
-        canvasValues.defaltSize,
-        canvasValues.scale,
-        canvasValues.scaleFactor
-      ),
-      p.view.bounds,
-      p.view.center,
-      p,
-      canvasLayer
-    );
-  });
+/**
+ * Calling this function will zoom out, and calls drawGridLine function that draw grid lines of calculated grid size 
+ * on the canvas.
+ * @param {*} p - the paper.js scope object, where we can access all canvos components.
+ * @param {*} canvasLayer - the layer of the grid lines which will be activated
+ */
+export function btnZoomOutFunction(p, canvasLayer) {
+  canvasLayer.activate();
+  if (canvasValues.scale > -4) canvasValues.scale -= 1;
+  drawGridLines(p);
+  rescalePath(p);
 }

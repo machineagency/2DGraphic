@@ -176,16 +176,19 @@ export function placeMouthDown(start, p, children) {
  *                  (mainPath, mouthDownPath, arrowHeadPath, arcPath, lengthSymbolPath, arcBasePath, arcText, lengthText)
  *                   will be cleared from.
  */
-export function placeMouthUp(start, end, children) {
+export function placeMouthUp(start, end, p, children, gridScale) {
   let minimumIndex = minIndex(end, children["mainPath"].segments);
   if (minimumIndex < 0) {
+    // first time drawing
     children["mainPath"].add(start);
     children["mainPath"].add(end);
   } else if (
+    // if the end point is not too close to the existing point, add the end point/
     end.getDistance(children["mainPath"].segments[minimumIndex].point) > 10
   ) {
     children["mainPath"].add(end);
   } else {
+     // if the end point is too close to the existing point, add the existing point/
     children["mainPath"].add(children["mainPath"].segments[minimumIndex].point);
   }
 
@@ -196,6 +199,25 @@ export function placeMouthUp(start, end, children) {
   if (children["arcBasePath"]) children["arcBasePath"].remove();
   if (children["arcText"]) children["arcText"].remove();
   if (children["lengthText"]) children["lengthText"].remove();
+
+  calcGridCordinate(p, children, gridScale, start, end);
+}
+
+
+function calcGridCordinate(p, children, gridScale, start, end) {
+  var GridPoint = (canvasPoint) => {
+    return new p.Point((canvasPoint.x - p.view.center.x)/gridScale, (canvasPoint.y - p.view.center.y)/gridScale);
+  }
+  var canvasPoint = (gridPoint) => {
+    return new p.Point(gridPoint.x * gridScale + p.view.center.x, gridPoint.y * gridScale + p.view.center.y);
+  }
+
+  if(children["penPath"].segments.length > 0) {
+    children["penPath"].add(GridPoint(end));
+  } else {
+    children["penPath"].add(GridPoint(start));
+    children["penPath"].add(GridPoint(end));
+  }
 }
 
 function minIndex(point, segArray) {

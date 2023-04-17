@@ -12,6 +12,8 @@ import {
   btnZoomInFunction,
   btnZoomOutFunction,
   setUpCanvas,
+  gridSize,
+  canvasValues,
 } from "./canvasFunctions.js";
 
 import { btnSketchFunction } from "./sketchInteractions.js";
@@ -26,15 +28,29 @@ window.onload = function () {
   var canvasLayer = new p.Layer();
   var sketchLayer = new p.Layer();
 
-  var canvasGroup = new p.Group();
-
   let btnZoomIn = document.querySelector(".btn-zoomIn");
   let btnZoomOut = document.querySelector(".btn-zoomOut");
   let btnSelect = document.querySelector(".btn-select");
 
-  setUpCanvas(p, canvasLayer, canvasGroup);
-  btnZoomInFunction(btnZoomIn, p, canvasLayer, canvasGroup);
-  btnZoomOutFunction(btnZoomOut, p, canvasLayer, canvasGroup);
+  setUpCanvas(p, canvasLayer);
+
+  var penPath = new p.Path({
+    name: "penPath",
+  })
+
+  var mainPath = new p.Path({
+    name: "mainPath",
+    strokeColor: "black",
+  });
+
+  btnZoomIn.addEventListener("click", () => {
+    btnZoomInFunction(p, canvasLayer);
+  })
+  
+  btnZoomOut.addEventListener("click", () => {
+    btnZoomOutFunction(p, canvasLayer);
+  });
+  
 
   var sketchTool = new p.Tool({
     name: "sketchTool",
@@ -45,11 +61,6 @@ window.onload = function () {
   btnSketch.addEventListener("click", () => {
     p.tools.find((tool) => tool.name === "sketchTool").activate();
     children = p.project.activeLayer.children;
-  });
-
-  var mainPath = new p.Path({
-    name: "mainPath",
-    strokeColor: "black",
   });
 
   // var tempLayer = new p.Layer();
@@ -69,6 +80,9 @@ window.onload = function () {
 
   sketchTool.onMouseUp = function (event) {
     end = event.point;
-    placeMouthUp(start, end, children);
+    var gridScale = gridSize(canvasValues.defaltSize, canvasValues.scale, canvasValues.scaleFactor);
+    placeMouthUp(start, end, p, children, gridScale);
   };
+
+  
 };
