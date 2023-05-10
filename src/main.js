@@ -1,4 +1,9 @@
-import ShapeInventory from "./ShapeInventory";
+import ShapeInventory from "./ShapeInventory.js";
+import { setupCanvas } from "./canvas/Canvas.js";
+import PointData from "./pointManager/pointData.js";
+import pointInventory from "./pointManager/pointInventory.js";
+import Selection from "./selection/selection.js";
+import SelectionVisualizer from "./selection/selectionVisualizer.js";
 
 function makeDrawingPad() {
   let canvas = document.createElement("canvas");
@@ -8,18 +13,7 @@ function makeDrawingPad() {
   let p = (() => {
     let p = new paper.PaperScope();
     p.setup(canvas);
-
-    var decor = new p.Group({
-      name: "decor",
-    });
-
-    var src = new p.Group({
-      name: "src",
-    });
-
-    var view = new p.Group({
-      name: "view",
-    });
+    setupCanvas(p);
 
     return p;
   })();
@@ -33,3 +27,23 @@ const container = document.querySelector("#canvas-container");
 container.appendChild(drawingPad);
 
 let s = new ShapeInventory(p);
+let pd = new PointData();
+let selection = new Selection(p);
+let selViz = new SelectionVisualizer(p);
+let c = new p.Path.Circle(new p.Point(0, 0), 2);
+let c2 = new p.Path.Circle(new p.Point(1, -1), 2);
+let c3 = new p.Path.Circle(new p.Point(1, 0), 2);
+c.name = "hi";
+c2.name = "here";
+c3.name = "bye";
+s.addShape(c);
+s.addShape(c2);
+s.addShape(c3);
+console.log(c);
+console.log(pd.points, pd.intersections);
+
+s.deleteShape(c3);
+console.log(pd.points, pd.intersections);
+
+selection.addPath(c);
+selViz.visualizeSelectionPaths();

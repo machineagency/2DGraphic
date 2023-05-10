@@ -1,4 +1,4 @@
-import CoordinateCalculator from "./CoordinateCalculator";
+import CoordinateCalculator from "./CoordinateCalculator.js";
 class CoordinateSystem {
   #p;
   #CoordinateCalculator;
@@ -14,15 +14,15 @@ class CoordinateSystem {
   srcPoint(viewPoint) {
     let gridScale = this.#CoordinateCalculator.get();
     return new this.#p.Point(
-      (viewPoint.x - this.#p.view.center.x) / getScale(),
-      (viewPoint.x - this.#p.view.center.y) / getScale()
+      (viewPoint.x - this.#p.view.center.x) / this.getScale(),
+      (viewPoint.y - this.#p.view.center.y) / this.getScale()
     );
   }
 
   viewPoint(srcPoint) {
     return new this.#p.Point(
-      srcPoint.x * getScale() + this.#p.view.center.x,
-      srcPoint.x * getScale() + this.#p.view.center.y
+      srcPoint.x * this.getScale() + this.#p.view.center.x,
+      srcPoint.y * this.getScale() + this.#p.view.center.y
     );
   }
 
