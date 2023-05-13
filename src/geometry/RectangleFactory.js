@@ -8,6 +8,7 @@ class RectangelFactory {
   #bottomLeft;
   #bottomRight;
   #center;
+  #depth = Infinity;
   #scale;
   constructor(p, shape) {
     this.#p = p;
@@ -33,30 +34,30 @@ class RectangelFactory {
     return this.#bottomRight;
   }
 
-  height(h) {
+  setHeight(h) {
     this.#height = h;
     return this;
   }
-  width(w) {
+  setWidth(w) {
     this.#width = w;
     return this;
   }
-  topLeft(x, y) {
+  setTopLeft(x, y) {
     const point = getPoint(x, y, this.#p);
     this.#topLeft = point;
     return this;
   }
-  topRight(x, y) {
+  setTopRight(x, y) {
     const point = getPoint(x, y, this.#p);
     this.#topRight = point;
     return this;
   }
-  bottomLeft(x, y) {
+  setBottomLeft(x, y) {
     const point = getPoint(x, y, this.#p);
     this.#bottomLeft = point;
     return this;
   }
-  bottomRight(x, y) {
+  setBottomRight(x, y) {
     const point = getPoint(x, y, this.#p);
     this.#bottomRight = point;
     return this;
@@ -65,6 +66,11 @@ class RectangelFactory {
   centerAt(x, y) {
     const point = getPoint(x, y, this.#p);
     this.#center = point;
+    return this;
+  }
+
+  setDepth(number) {
+    this.#depth = number;
     return this;
   }
 
@@ -94,7 +100,12 @@ class RectangelFactory {
       } else {
         alert("the rectangle is problematic, check the code");
       }
-      !this.#scale ?? this.#path.scale(this.#scale);
+      if (this.#scale != null) {
+        this.#path.scale(this.scale);
+      }
+      if (this.#depth != null) {
+        this.#path.depth = this.#depth;
+      }
       return this.#path;
     } else {
       console.log("rectangle is underspecified");

@@ -56,6 +56,7 @@ class ShapeInventory {
   }
 
   #addSrcChild(srcPath) {
+    if (!srcPath.name) srcPath.name = `#${Date.now()}`;
     this.#p.project.activeLayer.children["src"].addChild(srcPath);
   }
 

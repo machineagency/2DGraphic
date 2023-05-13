@@ -35,24 +35,38 @@ let pf = new PathFactory(p);
 let c = new p.Path.Circle(new p.Point(0, 0), 2);
 let c2 = new p.Path.Circle(new p.Point(0, -1), 2);
 let c3 = new p.Path.Circle(new p.Point(1, 0), 2);
-c.name = "hi";
-c2.name = "here";
-c3.name = "bye";
-s.addShape(c);
-s.addShape(c2);
-s.addShape(c3);
+// s.addShape(c);
+// s.addShape(c2);
+// s.addShape(c3);
 console.log(c);
 console.log(pd.points, pd.intersections);
 
-s.addShape(
-  pf.Sketch.from(0, 0)
-    .line.lineTo(2, 0)
-    .curve.arcTo(2, -2, false)
-    .line.lineTo(0, -2)
-    .close()
-    .build()
-);
-s.addShape(pf.Shape.rectangle.centerAt(0, 0).height(2).width(3).build());
+let curve = pf.Sketch.from([0, 0])
+  .line.to([2, 0])
+  .draw()
+  .curve.to([2, -2])
+  .through([1, -1])
+  .draw()
+  .bezier.to([2, -3])
+  .handle2([3, -3.5])
+  .handle1([3, -2.5])
+  .draw()
+  .line.to([0, -2])
+  .draw()
 
-pf.Shape.circle.centerAt(1, 1).radius(3).build();
-pf.Shape.rectang;
+  .close()
+  .return();
+s.addShape(curve);
+
+selection.addPath(curve);
+selViz.visualizeSelectionPaths();
+
+console.log(curve);
+
+// s.addShape(
+//   pf.Shape.rectangle.centerAt(0, 0).setHeight(5).setWidth(1.5).build()
+// );
+
+// console.log(
+//   pf.Shape.circle.centerAt(1, 2).setRadius(2).setDepth(12).build().depth
+// );
