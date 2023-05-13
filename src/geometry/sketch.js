@@ -4,7 +4,7 @@ class Sketch {
   }
 }
 
-class sketchBuilder {
+class SketchBuilder {
   #p;
   constructor(p, sketch = new Sketch(p)) {
     this.#p = p;
@@ -46,7 +46,7 @@ class sketchBuilder {
   }
 }
 
-class SketchLineBuilder extends sketchBuilder {
+class SketchLineBuilder extends SketchBuilder {
   constructor(p, sketch) {
     super(p, sketch);
   }
@@ -58,7 +58,7 @@ class SketchLineBuilder extends sketchBuilder {
   }
 }
 
-class SketchCurveBuilder extends sketchBuilder {
+class SketchCurveBuilder extends SketchBuilder {
   constructor(p, sketch) {
     super(p, sketch);
   }
@@ -70,4 +70,4 @@ class SketchCurveBuilder extends sketchBuilder {
   }
 }
 
-export default sketchBuilder;
+export default SketchBuilder;

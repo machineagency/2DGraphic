@@ -4,7 +4,7 @@ import PointData from "./pointManager/pointData.js";
 import pointInventory from "./pointManager/pointInventory.js";
 import Selection from "./selection/selection.js";
 import SelectionVisualizer from "./selection/selectionVisualizer.js";
-import sketchBuilder from "./geometry/sketch.js";
+import PathFactory from "./geometry/PathFactory.js";
 
 function makeDrawingPad() {
   let canvas = document.createElement("canvas");
@@ -31,7 +31,7 @@ let s = new ShapeInventory(p);
 let pd = new PointData();
 let selection = new Selection(p);
 let selViz = new SelectionVisualizer(p);
-let sb = new sketchBuilder(p);
+let pf = new PathFactory(p);
 let c = new p.Path.Circle(new p.Point(0, 0), 2);
 let c2 = new p.Path.Circle(new p.Point(0, -1), 2);
 let c3 = new p.Path.Circle(new p.Point(1, 0), 2);
@@ -45,11 +45,14 @@ console.log(c);
 console.log(pd.points, pd.intersections);
 
 s.addShape(
-  sb
-    .from(0, 0)
+  pf.Sketch.from(0, 0)
     .line.lineTo(2, 0)
     .curve.arcTo(2, -2, false)
     .line.lineTo(0, -2)
     .close()
     .build()
 );
+s.addShape(pf.Shape.rectangle.centerAt(0, 0).height(2).width(3).build());
+
+pf.Shape.circle.centerAt(1, 1).radius(3).build();
+pf.Shape.rectang;
