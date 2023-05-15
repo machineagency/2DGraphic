@@ -1,5 +1,7 @@
 import CoordinateSystem from "./coordinateSystem/CoordinateSystem.js";
 import Style from "./StyleSheet.js";
+import config from "./config.js";
+import CompoundPath from "./compoundPath/CompoundPath.js";
 import pointInventory from "./pointManager/pointInventory.js";
 
 //ShapeInventory doesn't has to be a singleton class because non of its
@@ -11,12 +13,24 @@ class ShapeInventory {
   #debug = true;
   #pointInv;
   #p;
+  #countID = 1;
   constructor(p) {
     this.#p = p;
     this.#pointInv = new pointInventory(p);
     this.#converter = new CoordinateSystem(p);
     this.srcInv = p.project.activeLayer.children["src"].children;
     this.#viewInv = p.project.activeLayer.children["view"].children;
+  }
+
+  addCompundShape(compPath) {
+    console.log(compPath.paths);
+    if (compPath instanceof CompoundPath) {
+      compPath.paths.forEach((path) => {
+        this.#addSrcChild(path);
+        this.#addViewShape(path);
+        this.#pointInv.addPath(path);
+      });
+    }
   }
 
   addShape(srcPath) {
@@ -32,6 +46,7 @@ class ShapeInventory {
         );
       }
     }
+
     this.#addSrcChild(srcPath);
     this.#addViewShape(srcPath);
     this.#pointInv.addPath(srcPath);
@@ -56,7 +71,8 @@ class ShapeInventory {
   }
 
   #addSrcChild(srcPath) {
-    if (!srcPath.name) srcPath.name = `#${Date.now()}`;
+    if (!srcPath.name) srcPath.name = `#${this.#countID++}`;
+    if (!srcPath.depth) srcPath.depth = 0;
     this.#p.project.activeLayer.children["src"].addChild(srcPath);
   }
 
@@ -71,6 +87,7 @@ class ShapeInventory {
     view.position = newPosition;
     view.scale(scale, scale, newPosition);
     view.name = src.name;
+    view.depth = src.depth;
     Style.viewShapeStyle(view);
 
     if (this.#viewInv[view.name]) {

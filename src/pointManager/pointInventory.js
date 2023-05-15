@@ -68,7 +68,6 @@ class PointInventory {
 
   recalcIntersections() {
     var paths = Util.src(this.#p);
-    console.log(paths);
     this.#pd.intersections = new Map();
     for (let i = 0; i < paths.length; i++) {
       for (let j = i + 1; j < paths.length; j++) {

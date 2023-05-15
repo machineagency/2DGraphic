@@ -23,7 +23,7 @@ class SelectionDecorator {
 
   highlightPath(srcPath) {
     let viewPath = Util.view(this.#p)[srcPath.name].clone();
-    viewPath.selected = true;
+    viewPath.fullySelected = true;
     this.#decor.add(viewPath);
   }
 }

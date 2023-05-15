@@ -1,5 +1,5 @@
 import GeometryFactory from "./GeometryFactory.js";
-import SketchBuilder from "./sketch.js";
+import SketchBuilder from "./sketch/sketch.js";
 class PathFactory {
   #p;
   constructor(p) {
