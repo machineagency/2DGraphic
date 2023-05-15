@@ -22,6 +22,26 @@ class ShapeInventory {
     this.#viewInv = p.project.activeLayer.children["view"].children;
   }
 
+  addItem(item) {
+    if (item instanceof CompoundPath) {
+      this.addCompundShape(item);
+    } else if (item instanceof this.#p.Path) {
+      this.addShape(item);
+    } else {
+      throw new Error("Invalid item type. Expected CompoundPath or Path.");
+    }
+  }
+
+  deleteItem(item) {
+    if (item instanceof CompoundPath) {
+      this.deleteCompoundShape(item);
+    } else if (item instanceof this.#p.Path) {
+      this.deleteShape(item);
+    } else {
+      throw new Error("Invalid item type. Expected CompoundPath or Path.");
+    }
+  }
+
   addCompundShape(compPath) {
     console.log(compPath.paths);
     if (compPath instanceof CompoundPath) {
@@ -33,39 +53,21 @@ class ShapeInventory {
     }
   }
 
-  addShape(srcPath) {
-    if (this.#debug) {
-      if (
-        !(
-          srcPath instanceof this.#p.Path ||
-          srcPath instanceof this.#p.CompoundPath
-        )
-      ) {
-        alert(
-          "can not add the input, input is neither a path or compound path"
-        );
-      }
+  deleteCompoundShape(compPath) {
+    if (compPath instanceof CompoundPath) {
+      compPath.paths.forEach((path) => {
+        this.deleteShape(path);
+      });
     }
+  }
 
+  addShape(srcPath) {
     this.#addSrcChild(srcPath);
     this.#addViewShape(srcPath);
     this.#pointInv.addPath(srcPath);
   }
 
   deleteShape(srcPath) {
-    if (this.#debug) {
-      if (
-        !(
-          srcPath instanceof this.#p.Path ||
-          srcPath instanceof this.#p.CompoundPath
-        )
-      ) {
-        alert(
-          "can not delete the input, input is neithher a path nor compound path"
-        );
-      }
-    }
-
     this.#deleteViewAndSrc(srcPath);
     this.#pointInv.deletePath(srcPath);
   }
