@@ -24,9 +24,9 @@ class ShapeInventory {
 
   addItem(item) {
     if (item instanceof CompoundPath) {
-      this.addCompundShape(item);
+      this.#addCompundShape(item);
     } else if (item instanceof this.#p.Path) {
-      this.addShape(item);
+      this.#addShape(item);
     } else {
       throw new Error("Invalid item type. Expected CompoundPath or Path.");
     }
@@ -34,15 +34,15 @@ class ShapeInventory {
 
   deleteItem(item) {
     if (item instanceof CompoundPath) {
-      this.deleteCompoundShape(item);
+      this.#deleteCompoundShape(item);
     } else if (item instanceof this.#p.Path) {
-      this.deleteShape(item);
+      this.#deleteShape(item);
     } else {
       throw new Error("Invalid item type. Expected CompoundPath or Path.");
     }
   }
 
-  addCompundShape(compPath) {
+  #addCompundShape(compPath) {
     console.log(compPath.paths);
     if (compPath instanceof CompoundPath) {
       compPath.paths.forEach((path) => {
@@ -53,21 +53,21 @@ class ShapeInventory {
     }
   }
 
-  deleteCompoundShape(compPath) {
+  #deleteCompoundShape(compPath) {
     if (compPath instanceof CompoundPath) {
       compPath.paths.forEach((path) => {
-        this.deleteShape(path);
+        this.#deleteShape(path);
       });
     }
   }
 
-  addShape(srcPath) {
+  #addShape(srcPath) {
     this.#addSrcChild(srcPath);
     this.#addViewShape(srcPath);
     this.#pointInv.addPath(srcPath);
   }
 
-  deleteShape(srcPath) {
+  #deleteShape(srcPath) {
     this.#deleteViewAndSrc(srcPath);
     this.#pointInv.deletePath(srcPath);
   }

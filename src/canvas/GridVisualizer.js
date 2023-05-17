@@ -1,4 +1,4 @@
-import Util from "../util.js";
+import Util from "../Util.js";
 import Style from "../StyleSheet.js";
 
 function drawGridLines(p) {

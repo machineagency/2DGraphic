@@ -22,15 +22,11 @@ class BooleanOperator {
     if (paths.length === 2) {
       var res = this.#operatorOnTwoPaths(op, paths[0], paths[1], inv);
     }
-
-    console.log(res);
     if (
       (res instanceof this.#p.Path && res.segments.length > 0) ||
-      (res instanceof this.#p.CompoundPath && res.children.length > 0)
+      (res instanceof this.#p.CompoundPath && res.children.length > 0) ||
+      res instanceof CompoundPath
     ) {
-      inv.addShape(res);
-    } else if (res instanceof CompoundPath) {
-      inv.addCompundShape(res);
       return res;
     }
   }
@@ -59,6 +55,7 @@ class BooleanOperator {
         } else {
           // Subtract as 2D first
           let subtracted = path1.subtract(path2);
+
           subtracted.depth = depth1;
           subtracted.name = `#${Date.now()}`;
           // Add intersection back with depth == depth1 - depth2
@@ -77,8 +74,8 @@ class BooleanOperator {
     }
 
     // Remove the original paths
-    inv.deleteShape(path1);
-    inv.deleteShape(path2);
+    inv.deleteItem(path1);
+    inv.deleteItem(path2);
     // Return the result
     return result;
   }

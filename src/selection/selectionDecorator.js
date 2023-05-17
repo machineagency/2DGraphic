@@ -1,5 +1,5 @@
 import Style from "../StyleSheet.js";
-import Util from "../util.js";
+import Util from "../Util.js";
 import CoordinateSystem from "../coordinateSystem/CoordinateSystem.js";
 import DecorManager from "../decorManager.js";
 // make sure the visualizer should have a name;
