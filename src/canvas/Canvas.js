@@ -11,6 +11,7 @@ function setupGroups(p) {
   new p.Group({ name: "decor" });
   new p.Group({ name: "src" });
   new p.Group({ name: "view" });
+  new p.Group({ name: "export" });
 }
 
 function drawGrid(p) {

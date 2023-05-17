@@ -23,7 +23,7 @@ class ShapeInventory {
   }
 
   addItem(item) {
-    if (item instanceof CompoundPath) {
+    if (Array.isArray(item)) {
       this.#addCompundShape(item);
     } else if (item instanceof this.#p.Path) {
       this.#addShape(item);
@@ -33,7 +33,7 @@ class ShapeInventory {
   }
 
   deleteItem(item) {
-    if (item instanceof CompoundPath) {
+    if (Array.isArray(item)) {
       this.#deleteCompoundShape(item);
     } else if (item instanceof this.#p.Path) {
       this.#deleteShape(item);
@@ -43,19 +43,18 @@ class ShapeInventory {
   }
 
   #addCompundShape(compPath) {
-    console.log(compPath.paths);
-    if (compPath instanceof CompoundPath) {
-      compPath.paths.forEach((path) => {
-        this.#addSrcChild(path);
-        this.#addViewShape(path);
-        this.#pointInv.addPath(path);
+    if (Array.isArray(compPath)) {
+      compPath.forEach((item) => {
+        this.#addSrcChild(item);
+        this.#addViewShape(item);
       });
+      // this.#addViewShape(copy);
     }
   }
 
   #deleteCompoundShape(compPath) {
-    if (compPath instanceof CompoundPath) {
-      compPath.paths.forEach((path) => {
+    if (compPath instanceof this.#p.CompoundPath) {
+      compPath.children.forEach((path) => {
         this.#deleteShape(path);
       });
     }
@@ -75,7 +74,9 @@ class ShapeInventory {
   #addSrcChild(srcPath) {
     if (!srcPath.name) srcPath.name = `#${this.#countID++}`;
     if (!srcPath.depth) srcPath.depth = 0;
-    this.#p.project.activeLayer.children["src"].addChild(srcPath);
+    // this.#p.project.activeLayer.children["src"].children[srcPath.name] =
+    //   srcPath;
+    this.#p.project.activeLayer.children["src"].addChild(srcPath.clone());
   }
 
   #addviewChild(viewPath) {

@@ -11,7 +11,6 @@ class CompoundPath {
   }
 
   add(path) {
-    console.log(path);
     this.delete(path);
     if (!path.name) path.name = `#${this.#count++}`;
     path.CompoundPath = this;

@@ -48,8 +48,9 @@ console.log(c);
 console.log(pd.points, pd.intersections);
 
 let curve = pf.Sketch.from([0, 0])
-  .line.to([2, 0])
-  .line.to([2, -2])
+  .line.to([4, 0])
+  .line.to([4, -2])
+  .line.to([2, -6])
   .line.to([-2, -2])
   .line.to([-2, 2])
   .line.to([0, 2])
@@ -57,23 +58,14 @@ let curve = pf.Sketch.from([0, 0])
   .return();
 
 curve.depth = 3;
+c.depth = 10;
+s.addItem(curve);
 
-// dividePath(curve);
-s.addItem(c);
-// s.addItem(c);
-// s.addItem(c2);
-// s.addItem(c3);
-// let contour = ex.exportPath(curve);
+let res = op.subtract(c, curve);
+console.log(res);
+s.addItem(res);
 
-// let res = op.subtract([curve, c]);
-// res = op.subtract([res, c2]);
-// res = op.subtract([res, c3]);
-// console.log(res);
-// s.addItem(res);
-let contour = ex.export(c);
-contour.forEach((item) => {
-  s.addItem(item);
-});
+let contour = ex.export(res);
 
 // selection.addPath(curve);
 // selViz.visualizeSelectionPaths();

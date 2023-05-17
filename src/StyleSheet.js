@@ -35,17 +35,32 @@ const selectionStyle = {
 const Style = {
   viewPathStyle: (path) => {
     path.strokeColor = "black";
-    strokeWidth = 2;
+    path.strokeWidth = 2;
   },
   viewShapeStyle: (shape) => {
-    let maxDepth = config.canvas.depth; //... set your max depth value
-    let minColor = 0; // darkest green value
-    let maxColor = 218; // brightest green value
-    let midColor = Math.floor((minColor + maxColor) / 2); // mid-point green value
+    setStrokeColor(shape);
+    shape.strokeWidth = 2;
+    shape.fillColor = calcFillColor(shape);
+  },
+  viewExportStyle: (shape) => {
+    setStrokeColor(shape);
+  },
+  canvas: canvasStyle,
+  selection: selectionStyle,
+};
 
-    // Normalize depth to [0, 1] range
-    let normalizedDepth = shape.depth / maxDepth;
+function calcFillColor(shape) {
+  let maxDepth = config.canvas.depth; //... set your max depth value
+  let minColor = 0; // darkest green value
+  let maxColor = 218; // brightest green value
+  let midColor = Math.floor((minColor + maxColor) / 2); // mid-point green value
+  let color;
 
+  // Normalize depth to [0, 1] range
+  let normalizedDepth = shape.depth / maxDepth;
+  if (normalizedDepth >= 1) {
+    color = null;
+  } else {
     // Interpolate color value
     let greenValue = Math.round(
       midColor - normalizedDepth * (midColor - minColor)
@@ -59,14 +74,18 @@ const Style = {
     if (greenHex.length < 2) greenHex = "0" + greenHex;
 
     // Create color string
-    let color = "#44" + greenHex.toUpperCase() + "B9";
+    color = "#44" + greenHex.toUpperCase() + "B9";
+  }
+  return color;
+}
 
+function setStrokeColor(shape) {
+  let color;
+  if (shape.depth === config.canvas.depth) {
+    shape.strokeColor = "#black";
+    shape.strokeColor.alpha = 0.4;
+  } else {
     shape.strokeColor = "black";
-    shape.strokeWidth = 2;
-    shape.fillColor = color;
-  },
-  canvas: canvasStyle,
-  selection: selectionStyle,
-};
-
+  }
+}
 export default Style;

@@ -1,5 +1,5 @@
-import ShapeInventory from "../ShapeInventory.js";
 import CompoundPath from "../compoundPath/CompoundPath.js";
+import ExportPathVisualizer from "./ExportPathVisualizer.js";
 
 class PathExporter {
   #p;
@@ -9,19 +9,34 @@ class PathExporter {
 
   // Export item based on its type (CompoundPath or Path)
   export(item) {
-    if (item instanceof CompoundPath) {
-      return item.paths.map((path) => this.exportPath(path));
+    let exportResult;
+
+    if (Array.isArray(item)) {
+      exportResult = [];
+      item.forEach((path) => {
+        exportResult.push(this.exportPath(path));
+      });
     } else if (item instanceof this.#p.Path) {
-      return this.exportPath(item);
+      exportResult = [this.exportPath(item)];
     } else {
       throw new Error("Invalid item type. Expected CompoundPath or Path.");
     }
+
+    let displayer = new ExportPathVisualizer(this.#p);
+    displayer.displayExport(exportResult);
+    return exportResult;
   }
 
   // Export a single path, creating contours
   exportPath(path, distance = 0.1, minArea = 0.1) {
     let contours = [];
     let currentPath = path.clone();
+    currentPath.depth = path.depth;
+
+    let originalPath = this.#copyOuterContourPath(path);
+    // Add the modified original path to the contours array
+    contours.push(originalPath);
+
     let oldarea = Math.abs(path.area);
 
     while (Math.abs(currentPath.area) > minArea) {
@@ -39,7 +54,7 @@ class PathExporter {
       );
 
       // Loop through remaining points on the path
-      for (let i = distance / 2; i < currentPath.length; i += 0.02) {
+      for (let i = distance / 2; i < currentPath.length; i += 0.03) {
         let point = currentPath.getPointAt(i);
         let normal = currentPath.getNormalAt(i);
         if (path.clockwise) {
@@ -68,7 +83,30 @@ class PathExporter {
           : largestPath;
       }, pa);
 
+      // Get all paths with the same winding as the original path
+      // splitPaths.push(pa);
+      // let pathsWithCorrectWinding = splitPaths.filter(
+      //   (currentPath) => currentPath.clockwise === path.clockwise
+      // );
+
+      // let stop = false;
+      // pathsWithCorrectWinding.forEach((newPath) => {
+      //   newPath.closed = true;
+      //   newPath.depth = currentPath.depth;
+      //   if (
+      //     Math.abs(newPath.area) > Math.abs(oldarea) ||
+      //     newPath.getIntersections(currentPath).length > 0
+      //   ) {
+      //     stop = true;
+      //   } else {
+      //     contours.push(newPath);
+      //   }
+      // });
+
+      // should turn this into recursion!!!
+
       newPath.closed = true;
+      newPath.depth = currentPath.depth;
 
       // Break if the area of the new path is greater than the old one, or if it intersects with the current path
       if (
@@ -87,25 +125,16 @@ class PathExporter {
     // Return the contours of the path
     return contours;
   }
-}
 
-function to360(angle) {
-  return Math.abs(angle + 360) % 360;
-}
-
-function minPoint(point, pointMap) {
-  var minPoint = null;
-  var minDis = 99999;
-  var index = -1;
-  pointMap.forEach((val, i) => {
-    if (point.getDistance(val) < minDis) {
-      minDis = point.getDistance(val);
-      minPoint = val;
-      index = i;
+  #copyOuterContourPath(path) {
+    let originalPath = new this.#p.Path();
+    for (let i = 0; i <= path.length; i += 0.02) {
+      originalPath.add(path.getPointAt(i));
     }
-  });
-
-  return [minPoint, minDis, index];
+    originalPath.closed = true;
+    originalPath.depth = path.depth;
+    return originalPath;
+  }
 }
 
 export default PathExporter;
