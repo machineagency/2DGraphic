@@ -7,88 +7,32 @@ class BooleanOperator {
     this.#p = p;
   }
 
-  unite(path1, path2) {
-    return this.#operatorFunctions("unite", path1, path2);
-  }
-  intersect(path1, path2) {
-    return this.#operatorFunctions("intersect", path1, path2);
-  }
+  // unite(path1, path2) {
+
+  // }
+  // intersect(path1, path2) {
+
+  // }
   subtract(path1, path2) {
-    return this.#operatorFunctions("subtract", path1, path2);
-  }
-
-  #operatorFunctions(op, path1, path2) {
     let inv = new ShapeInventory(this.#p);
-    var res = this.#operatorOnTwoPaths(op, path1, path2, inv);
-
-    if (
-      (res instanceof this.#p.Path && res.segments.length > 0) ||
-      Array.isArray(res)
-    ) {
-      return res;
-    }
+    return this.#subtractHelper(path1, path2, inv);
   }
 
-  #operatorOnTwoPaths(op, path1, path2, inv) {
-    // Check if both arguments are valid path instances
-    if (!(path1 instanceof this.#p.Path) || !(path2 instanceof this.#p.Path)) {
-      throw new Error("Both arguments must be instances of Path");
-    }
-
+  #subtractHelper(path1, path2, inv) {
     // Check depth of both paths
-    let depth1 = path1.depth;
-    let depth2 = path2.depth;
 
     // Perform operation on path1 and path2 based on their depths
     let result;
 
-    if (Array.isArray[path1]) {
-      if (Array.isArray[path2]) {
+    if (Array.isArray(path1)) {
+      if (Array.isArray(path2)) {
       } else {
+        result = array1SubtractPath2(path1, path2, this.#p);
       }
     } else {
-      if (Array.isArray[path2]) {
+      if (Array.isArray(path2)) {
       } else {
-      }
-    }
-
-    if (depth1 === depth2) {
-      result = path1[op](path2);
-    } else {
-      // Handle case when depth is different
-      console.log(depth2);
-      if (op === "subtract") {
-        if (depth2 === 0) {
-          result = path1.subtract(path2);
-          result = AfterOperationPathProcessor(result, this.#p, depth1);
-        } else {
-          // Subtract as 2D first
-          let subtracted = path1.subtract(path2);
-          subtracted = AfterOperationPathProcessor(subtracted, this.#p, depth1);
-          // Add intersection back with depth == depth1 - depth2
-          let intersection = path1.intersect(path2);
-
-          intersection = AfterOperationPathProcessor(
-            intersection,
-            this.#p,
-            depth2
-          );
-          result = [...subtracted, ...intersection];
-        }
-      } else if (op === "unite") {
-        // Determine the path with smaller depth
-        let lowerDepthPath = depth1 < depth2 ? path1 : path2;
-        let higherDepthPath = depth1 < depth2 ? path2 : path1;
-
-        // Subtract the lower depth path from the higher depth path
-        let subtracted = higherDepthPath.subtract(lowerDepthPath);
-        subtracted = AfterOperationPathProcessor(
-          subtracted,
-          this.#p,
-          higherDepthPath.depth
-        );
-
-        result = [...subtracted, lowerDepthPath];
+        result = path1subtractPath2(path1, path2, this.#p);
       }
     }
 
@@ -100,27 +44,46 @@ class BooleanOperator {
   }
 }
 
+function Array1SubtractArray2() {}
+
+function path1SubtractArray2() {}
+
+//array1 subtract path2 + union(array1 intersect path2)
 function array1SubtractPath2(array1, path2, p) {
-  inter = [];
+  let inter = [];
+  let sub = [];
   array1.forEach((path1) => {
-    let [subtract, intersection] = path1subtractPath2(path1, path2, p);
-    inter.push(...intersection);
+    let res = path1subtractPath2(path1, path2, p);
+    res.forEach((resItem) => {
+      if (resItem instanceof p.CompoundPath) {
+        sub.push(resItem);
+      } else if (resItem instanceof p.Path) {
+        sub.push(...resItem[0]);
+        inter.push(...resItem[1]);
+      }
+    });
   });
   let finalIntersection;
   for (let i = 0; i < inter.length - 1; i++) {
     let temp = inter[i].intersect(inter[i + 1]);
-    finalIntersection = inter[i].intersect(inter[i + 1]);
+    let finalIntersection = inter[i].intersect(inter[i + 1]);
     temp.remove();
   }
-  return [...subtract, finalIntersection];
+  if (finalIntersection) {
+    return [[finalIntersection], [...sub]];
+  } else {
+    return sub;
+  }
 }
 
 function path1subtractPath2(path1, path2, p) {
   let depth1 = path1.depth;
   let depth2 = path2.depth;
-  if (depth2 === 0) {
+  let result;
+  if (depth2 <= depth1) {
     result = path1.subtract(path2);
-    result.depth = 0;
+    result.depth = depth1;
+    return [result];
   } else {
     // Subtract as 2D first
     let subtracted = path1.subtract(path2);

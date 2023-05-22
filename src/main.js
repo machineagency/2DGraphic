@@ -38,7 +38,7 @@ let pf = new PathFactory(p);
 let op = new BooleanOperator(p);
 let ex = new PathExporter(p);
 
-let c = new p.Path.Circle(new p.Point(1, -1), 2);
+let c = new p.Path.Circle(new p.Point(1.2, -1), 0.5);
 let c2 = new p.Path.Circle(new p.Point(-1, -1), 0.5);
 let c3 = new p.Path.Circle(new p.Point(-1, 1), 0.5);
 // s.addShape(c);
@@ -48,9 +48,8 @@ console.log(c);
 console.log(pd.points, pd.intersections);
 
 let curve = pf.Sketch.from([0, 0])
-  .line.to([4, 0])
-  .line.to([4, -2])
-  .line.to([2, -6])
+  .line.to([2, 0])
+  .line.to([2, -2])
   .line.to([-2, -2])
   .line.to([-2, 2])
   .line.to([0, 2])
@@ -58,10 +57,16 @@ let curve = pf.Sketch.from([0, 0])
   .return();
 
 curve.depth = 3;
-c.depth = 10;
-s.addItem(curve);
+c.depth = 0;
+c2.depth = 0;
+c3.depth = 0;
+s.addItem(c);
 
-let res = op.subtract(c, curve);
+let res = op.subtract(curve, c);
+console.log(res);
+res = op.subtract(res, c2);
+console.log(res);
+res = op.subtract(res, c3);
 console.log(res);
 s.addItem(res);
 

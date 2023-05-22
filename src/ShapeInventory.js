@@ -23,8 +23,10 @@ class ShapeInventory {
   }
 
   addItem(item) {
-    if (Array.isArray(item)) {
-      this.#addCompundShape(item);
+    if (item instanceof this.#p.CompoundPath) {
+      this.#addCompoundShape(item);
+    } else if (Array.isArray(item)) {
+      this.#addArrayShape(item);
     } else if (item instanceof this.#p.Path) {
       this.#addShape(item);
     } else {
@@ -33,22 +35,47 @@ class ShapeInventory {
   }
 
   deleteItem(item) {
-    if (Array.isArray(item)) {
+    if (item instanceof this.#p.CompoundPath) {
+      this.#deleteCompoundShape(item);
+    } else if (Array.isArray(item)) {
       this.#deleteCompoundShape(item);
     } else if (item instanceof this.#p.Path) {
       this.#deleteShape(item);
     } else {
-      throw new Error("Invalid item type. Expected CompoundPath or Path.");
+      throw new Error(
+        "Invalid item type. Expected CompoundPath, Array of Path or Path."
+      );
     }
   }
 
-  #addCompundShape(compPath) {
-    if (Array.isArray(compPath)) {
-      compPath.forEach((item) => {
-        this.#addSrcChild(item);
-        this.#addViewShape(item);
+  #addCompoundShape(compoundPath) {
+    if (compoundPath instanceof this.#p.CompoundPath) {
+      this.#addSrcChild(compoundPath);
+      this.#addViewShape(compoundPath);
+    }
+  }
+
+  #addArrayShape(arrayShape) {
+    if (Array.isArray(arrayShape)) {
+      arrayShape.forEach((item) => {
+        if (item instanceof this.#p.CompoundPath) {
+          this.#addCompoundShape(item);
+        } else {
+          this.#addShape(item);
+        }
       });
-      // this.#addViewShape(copy);
+    }
+  }
+
+  #deletArrayShape(arrayShape) {
+    if (Array.isArray(arrayShape)) {
+      arrayShape.forEach((item) => {
+        if (item instanceof this.#p.CompoundPath) {
+          this.#deleteCompoundShape(item);
+        } else {
+          this.#deleteShape(item);
+        }
+      });
     }
   }
 
