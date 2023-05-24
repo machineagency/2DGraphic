@@ -51,13 +51,14 @@ const Style = {
 
 function calcFillColor(shape) {
   let maxDepth = config.canvas.depth; //... set your max depth value
+  let depth = maxDepth - shape.height;
   let minColor = 0; // darkest green value
   let maxColor = 218; // brightest green value
   let midColor = Math.floor((minColor + maxColor) / 2); // mid-point green value
   let color;
 
   // Normalize depth to [0, 1] range
-  let normalizedDepth = shape.depth / maxDepth;
+  let normalizedDepth = depth / maxDepth;
   if (normalizedDepth >= 1) {
     color = null;
   } else {
@@ -76,12 +77,14 @@ function calcFillColor(shape) {
     // Create color string
     color = "#44" + greenHex.toUpperCase() + "B9";
   }
+
   return color;
 }
 
 function setStrokeColor(shape) {
   let color;
-  if (shape.depth === config.canvas.depth) {
+  let depth = config.canvas.depth - shape.height;
+  if (depth === config.canvas.depth) {
     shape.strokeColor = "#black";
     shape.strokeColor.alpha = 0.4;
   } else {

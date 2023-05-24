@@ -100,9 +100,6 @@ class ShapeInventory {
 
   #addSrcChild(srcPath) {
     if (!srcPath.name) srcPath.name = `#${this.#countID++}`;
-    if (!srcPath.depth) srcPath.depth = 0;
-    // this.#p.project.activeLayer.children["src"].children[srcPath.name] =
-    //   srcPath;
     this.#p.project.activeLayer.children["src"].addChild(srcPath.clone());
   }
 
@@ -117,7 +114,7 @@ class ShapeInventory {
     view.position = newPosition;
     view.scale(scale, scale, newPosition);
     view.name = src.name;
-    view.depth = src.depth;
+    view.height = src.height;
     Style.viewShapeStyle(view);
 
     if (this.#viewInv[view.name]) {

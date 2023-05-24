@@ -7,6 +7,7 @@ import PathFactory from "./geometry/PathFactory.js";
 import config from "./config.js";
 import BooleanOperator from "./shapeOperator/BooleanOperator.js";
 import PathExporter from "./pathExporter/PathExporter.js";
+import BooleanCutter from "./shapeOperator/BooleanCutter.js";
 
 function makeDrawingPad() {
   let canvas = document.createElement("canvas");
@@ -36,11 +37,16 @@ let selection = new Selection(p);
 let selViz = new SelectionVisualizer(p);
 let pf = new PathFactory(p);
 let op = new BooleanOperator(p);
+let bot = new BooleanCutter(p);
 let ex = new PathExporter(p);
 
 let c = new p.Path.Circle(new p.Point(1.2, -1), 0.5);
 let c2 = new p.Path.Circle(new p.Point(-1, -1), 0.5);
 let c3 = new p.Path.Circle(new p.Point(-1, 1), 0.5);
+
+let h = new p.Path.Circle(new p.Point(1.2, -1), 0.2);
+let h2 = new p.Path.Circle(new p.Point(-1, -1), 0.2);
+let h3 = new p.Path.Circle(new p.Point(-1, 1), 0.2);
 // s.addShape(c);
 // s.addShape(c2);
 // s.addShape(c3);
@@ -54,23 +60,24 @@ let curve = pf.Sketch.from([0, 0])
   .line.to([-2, 2])
   .line.to([0, 2])
   .close()
+  .fromBaseWithHeight(7)
   .return();
 
-curve.depth = 3;
-c.depth = 0;
-c2.depth = 0;
-c3.depth = 0;
-s.addItem(c);
+c.depth = 7;
+c2.depth = 7;
+c3.depth = 7;
+h.depth = 10;
+h2.depth = 10;
+h3.depth = 10;
 
-let res = op.subtract(curve, c);
+let res = bot.cut(curve, c);
+res = bot.cut(res, c2);
+res = bot.cut(res, c3);
+res = bot.cut(res, h);
+res = bot.cut(res, h2);
+res = bot.cut(res, h3);
 console.log(res);
-res = op.subtract(res, c2);
-console.log(res);
-res = op.subtract(res, c3);
-console.log(res);
+
 s.addItem(res);
 
 let contour = ex.export(res);
-
-// selection.addPath(curve);
-// selViz.visualizeSelectionPaths();

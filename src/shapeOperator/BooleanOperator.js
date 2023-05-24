@@ -80,7 +80,7 @@ function path1subtractPath2(path1, path2, p) {
   let depth1 = path1.depth;
   let depth2 = path2.depth;
   let result;
-  if (depth2 <= depth1) {
+  if (depth2 >= depth1) {
     result = path1.subtract(path2);
     result.depth = depth1;
     return [result];
